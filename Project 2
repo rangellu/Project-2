@@ -1,1 +1,87 @@
 
+"""
+Author: Rangel Eauri Lu
+Date: 5-13/5/17
+FileName: Personal Finance Tracker
+Purpose: Tracking personal finance, including income and expenses, and providing insights whether you are within the budget for specific categories.
+"""
+# Personal Finance Tracker
+class PersonalFinanceTracker:
+    # Empty lists to store income and expenses
+    def __init__(self):
+        self.income = []
+        self.expenses = []
+    # Calculate total income, total expenses, and net balance
+    def add_income(self, amount, source):
+        self.income.append({'amount': amount, 'source': source})
+    # Add an expense with amount and category
+    def add_expense(self, amount, category):
+        self.expenses.append({'amount': amount, 'category': category})
+    # Calculate total income, total expenses, and net balance
+    def total_income(self):
+        return sum(item['amount'] for item in self.income)
+
+    def total_expenses(self):
+        return sum(item['amount'] for item in self.expenses)
+
+    def net_balance(self):
+        return self.total_income() - self.total_expenses()
+    # Tracking spending by category
+    def spending_by_category(self):
+        category_totals = {}
+        for expense in self.expenses:
+            category = expense['category']
+            amount = expense['amount']
+            if category in category_totals:
+                category_totals[category] += amount
+            else:
+                category_totals[category] = amount
+        return category_totals
+# Budget Planner
+class BudgetPlanner:
+    def __init__(self, tracker):
+        self.tracker = tracker
+    # Setting a budget for a specific category
+    def set_budget(self, category, amount):
+        self.budget = {category: amount}
+    # Check if spending exceeds the set budget for each category
+    def check_budget(self):
+        spending = self.tracker.spending_by_category()
+        # Compare spending with the set budget and print the results
+        for category, amount in self.budget.items():
+            # Check if the category has recorded spending
+            if category in spending:
+                # Check if spending exceeds the budget
+                if spending[category] > amount:
+                    print(f"Budget exceeded for {category}: Spent {spending[category]}, Budget {amount}")
+                else:
+                    print(f"Budget on track for {category}: Spent {spending[category]}, Budget {amount}")
+            else:
+                print(f"No spending recorded for {category}.")
+
+# Example usage
+tracker = PersonalFinanceTracker()
+# Adding income
+while True:
+    incomeInput = input("Enter your income amount: (type 'done' to finish) ")
+    if incomeInput.lower() == 'done':
+        break
+    incomeSource = input("Enter the source of income: ")
+    tracker.add_income(float(incomeInput), incomeSource)
+# Adding expenses
+while True:
+    expenseInput = input("Enter your expense amount: (type 'done' to finish) ")
+    if expenseInput.lower() == 'done':
+        break
+    expenseCategory = input("Enter the category of the expense: ")
+    tracker.add_expense(float(expenseInput), expenseCategory)
+
+print(f"Total Income: {tracker.total_income()}")
+print(f"Total Expenses: {tracker.total_expenses()}")
+
+budget_planner = BudgetPlanner(tracker)
+# Setting a budget for a category
+budgetCategory = input("Enter the category for which you want to set a budget: ")
+budgetAmount = float(input(f"Enter the budget amount for {budgetCategory}: "))
+budget_planner.set_budget(budgetCategory, budgetAmount)
+budget_planner.check_budget()
